@@ -27,7 +27,7 @@
    <div class="singerlist">
        <h2>歌单</h2>
        <ul class="singerlist-center">
-          <li v-for="(item,index) in singerlist" :key="index">
+          <li v-for="(item,index) in singerlist" @click="golist(item.id)" :key="index">
            <img :src="item.pic">
            <p>{{item.title}}</p>
           </li>
@@ -40,7 +40,7 @@
      <div class="singer">
        <h2>歌手</h2>
        <ul class="singer-center">
-          <li v-for="(item,index) in singer" :key="index">
+          <li v-for="(item,index) in singer" :key="index" @click="gosingerDetial(item)">
            <img :src="item.pic">
            <p>{{item.title}}</p>
           </li>
@@ -49,7 +49,7 @@
 
    </div>
 
-
+<Foot/>
   </div>
 </template>
 
@@ -57,6 +57,7 @@
 import Swiper from "swiper";
 import "swiper/dist/css/swiper.min.css";
 import "swiper/dist/js/swiper.min.js";
+import Foot from "../components/foot.vue"
 export default {
   data() {
     return {
@@ -65,13 +66,33 @@ export default {
       singer:[]
     };
   },
-
+components:{
+ Foot
+},
   created() {
     this.bannerlist();
     this.singerlistdata();
     this.singerdata();
   },
   methods: {
+    golist(options){
+       this.$router.push({
+         path:"/singerListDetail",
+         query:{
+           id:options
+         }
+       })
+    },
+    gosingerDetial(options){
+   console.log(options.id);
+   this.$router.push({
+     path:"/singerDetail",
+     query:{
+       id:options.id
+     }
+   })
+  
+    },
     singerdata(){
      this.$axios.get("api/singer/singerAll").then((res)=>{
        console.log(res);
@@ -84,7 +105,7 @@ export default {
      })
   },
   bannerlist(){
-  this.$axios.get("api/singer/singerAll").then((res) => {
+  this.$axios.get("api/album/albums").then((res) => {
       this.list = res.data.data.slice(0,10);
       setTimeout(()=>{
            this.swiper()
@@ -110,7 +131,14 @@ export default {
       });
     },
     gosinger(options){
-
+       console.log(options)
+       this.$router.push({
+         path:"/albumDetail",
+         query:{
+           albumId:options.id,
+           singerId:options.singerId
+         }
+       })
     }
   },
 };

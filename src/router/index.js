@@ -7,6 +7,12 @@ import MyMusic from "../views/mymusic.vue"
 import Search from "../views/search.vue"
 import Login from "../views/login.vue"
 import Register from "../views/register.vue"
+import Tellme from "../components/tellme.vue"
+import Me from "../components/me.vue"
+import SingerDetil from "../views/singerDetail.vue"
+import SingerListDetail from "../views/singerListDetail.vue"
+import AlbumDetail from "../views/albumDeatil.vue"
+import Song from "../views/song.vue"
 Vue.use(VueRouter)
 
 const routes = [
@@ -44,6 +50,35 @@ const routes = [
     path:"/register",
     name: "Register",
     component: Register
+  },
+  {
+    path:"/tellme",
+    name:"Tellme",
+    component:Tellme
+  },
+  {
+    path:"/me",
+    name:"Me",
+    component:Me
+  },
+  {
+    path:"/singerDetail",
+    name:"SingerDetil",
+    component:SingerDetil
+  },
+  {
+    path:"/singerListDetail",
+    name:SingerListDetail,
+    component:SingerListDetail
+  },{
+    path:"/albumDetail",
+    name:AlbumDetail,
+    component:AlbumDetail
+  },
+  {
+    path:"/song",
+    name:Song,
+    component:Song
   }
   
 ]

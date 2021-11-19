@@ -1,0 +1,65 @@
+[class^="el-iconfont"], [class*="el-iconfont"] 
+{ 
+  font-family: "iconfont" !important;
+  font-size: 24px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; 
+}
+@font-face {
+  font-family: "iconfont"; /* Project id  */
+  src: url('iconfont.ttf?t=1637141293740') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-yangshengqi:before {
+  content: "\f0051";
+}
+
+.icon-liebiao:before {
+  content: "\343a";
+}
+
+.icon-zanting:before {
+  content: "\e87a";
+}
+
+.icon-bofang:before {
+  content: "\e87c";
+}
+
+.icon-yunduanxiazai:before {
+  content: "\ec1d";
+}
+
+.icon-zanting1:before {
+  content: "\e89a";
+}
+
+.icon-ziyuan:before {
+  content: "\e615";
+}
+
+.icon-ziyuan1:before {
+  content: "\e616";
+}
+
+.icon-shoucang:before {
+  content: "\e8b9";
+}
+
+.icon-shangyiqu:before {
+  content: "\e63c";
+}
+
+.icon-xiayiqu:before {
+  content: "\e63d";
+}
+

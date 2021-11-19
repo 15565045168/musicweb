@@ -80,11 +80,11 @@ export default {
     getcurtime(){
       this.onetime=musicplay.formate(this.getcurtime);
       this.twotime=musicplay.formate(this.getduration);
-    
       if(this.curlength==100){
-        this.curlength=100,
-        this.onetime=musicplay.formate(this.getduration)
-        this.$store.commit("setisplay",false)
+        this.$store.commit("setisplay",true);
+        this.curlength=0;
+       this.bottommusic();
+       return;
       }else{
       this.curlength=Math.floor((this.getcurtime/this.getduration)*100)
       }

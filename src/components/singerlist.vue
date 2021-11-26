@@ -54,6 +54,10 @@ methods:{
 .one{
     color:#409EFF;
 }
+::-webkit-scrollbar {
+/*隐藏滚轮*/
+display: none;
+}
  .singerlist{
    width:300px;
    height:500px;

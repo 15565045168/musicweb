@@ -7,15 +7,13 @@
             <h3>{{obj.name}}</h3>
             <h5>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{obj.auth}}</h5>
             <p>&nbsp;&nbsp;&nbsp;&nbsp;{{obj.introduction}}</p>
-            <ul>
-               <li><i class="icon-ziyuan1 el-iconfont"></i></li>
-               <li><i class="icon-bofang el-iconfont"></i></li>
-               <li><i class="icon-ziyuan  el-iconfont"></i></li>
-            </ul>
         </div>
         <div class="right">
-            <div class="box" v-html="obj.lynic">
-            </div>
+            <ul>
+            <li v-for="(item,index) in result" :key="index">
+                {{item[1]}}
+            </li>
+            </ul>
         </div>
     </div>
     
@@ -26,39 +24,60 @@
 
 <script>
 import Foot from "../components/foot.vue"
+import musicplay from "../utils/musicplay"
+import {mapGetters} from "vuex"
 export default {
     data(){
         return {
          songId:'',
-         obj:{}
+         obj:{},
+         lynic:"",
+         result:'',
         }
     },
     components:{
          Foot
     },
+    computed:{
+        ...mapGetters(["getid","getcurtime","getIsShow"])
+    },
     created(){
-      
-       this.songId=this.$route.query.id,
-       this.new();
+     this.new(this.getid)
+    },
+    watch:{
+       getid:function(options){
+           this.new(options);
+           
+       },
+         getcurtime:function(){
+             if(this.result.length>0){
+    
+                 for(var i=0;i<this.result.length;i++){
+                     if(this.getcurtime>=this.result[i][0]){
+                         for(var j=0;j<this.result.length;j++){
+                             document.querySelectorAll("ul li")[j].style.color="#000";
+                             document.querySelectorAll("ul li")[j].style.fontSize="14px";
+                         }
+                         if(i>=0){
+                              document.querySelectorAll("ul li")[i].style.color="#409EFF";
+                             document.querySelectorAll("ul li")[i].style.fontSize="20px";
+                         }
+                     }
+                 }
+             }
+         }
     },
     methods:{
-    new(){
-        this.$axios.get("api//song/selectById?id="+this.songId).then((res)=>{
-           var lynic=res.data.data.lynic
-    
-            var cc=""
-            for(var i=0;i<lynic.length;i++){
-                if(lynic[i]=="["){
-                     cc+="</br>"+lynic.charAt(i)
-                }else{
-                    cc+=lynic.charAt(i)
-                }               
-            }
+    new(songId){
+        this.$axios.get("api//song/selectById?id="+songId).then((res)=>{
             this.obj=res.data.data;
-            this.obj.lynic= JSON.parse(JSON.stringify(cc));
-            console.log(this.obj)
+          
+         
+     this.result= musicplay.jiexi(res.data.data.lynic);
+     
         })
-    }
+    },
+  
     }
 
 
@@ -140,22 +159,19 @@ export default {
              }
          }
          .right{
-             width:60%;
+             width:50%;
              right:0;
              top:20px;
-             .box{
-              position:relative;
-              width:70%;
-              height:700px;
-              top:20px;
-              right:0;
-              bottom:0;
-              left: 0;
-              margin:auto;
-              text-align: center;
-              line-height:25px;
-              overflow-y:scroll;
-              font-size:14px;
+             ul{
+                 width:100%;
+                 height:700px;
+                 overflow-y: auto;
+                 li{
+                     list-style:none;
+                     line-height:30px;
+                     text-align: center;
+                     font-size:14px;
+                 }
              }
          }
      }

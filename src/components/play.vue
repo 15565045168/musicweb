@@ -11,31 +11,31 @@
       <div class="item">
         {{onetime}}
       </div>
-      <div class="item"     ref="progress"  @mousemove="move">
+      <div class="item"     ref="progress" >
         <div class="musicmessage" >
           <div class="left">{{gettitle}}</div>
           <div class="right">{{getartist}}</div>
         </div>
-        <!--  @click="updatemove" -->
-        <div class="body"   ref="progress" @click="updatemove">
-          <div class="dian" ref="curwidth"  :style="{width:curlength+'%'}" ></div>
-          <div class='dian' ref="idot" :style="{left:curlength+'%'}"  @mousedown="down"  @mouseup="up"></div>
+        <div class="body"> 
+           <el-slider v-model="curlength"></el-slider>
         </div>
         
       </div>
       <div class="item">{{twotime}}</div>
      
       <div class="item"  ref="laba" >
-          <div class="laba" ref="labaheight"  v-show="laba" @click="audio">
-           <div class="dian" ref="dianheight" :style="{height:getvolume*100+'px'}"></div>
+          <div class="laba" ref="labaheight"  v-show="laba">
+           <el-slider
+      v-model="volume"
+      vertical
+      height="100px">
+    </el-slider>
          </div>
           <div class="laba"  @click="dianlaba"><i class="icon-yangshengqi el-iconfont"></i></div>
         </div>
-      <div class="item" ><i class="icon-shoucang el-iconfont"></i></div>
-      <div class="item"><i class="icon-yunduanxiazai el-iconfont"></i></div>
+      <div class="item" @click="collection"><i class="icon-shoucang el-iconfont"></i></div>
       <div class="item" @click="liebiao"><i class="icon-liebiao el-iconfont"></i></div>
     </div>
-    {{this.volume}}
   </div>
 </template>
 
@@ -55,6 +55,8 @@ export default {
        volume:10,//音量50
        volumheight:0,
        startHight:0,
+       value1:0,
+       value:0
     }
   },
   mounted(){
@@ -74,6 +76,7 @@ export default {
     "getcurtime",
     "getvolume",
     "getsongindex",
+    "getIsShow"
   ])
   },
   watch:{
@@ -86,15 +89,57 @@ export default {
        this.bottommusic();
        return;
       }else{
-      this.curlength=Math.floor((this.getcurtime/this.getduration)*100)
+      this.curlength=Math.floor((this.getcurtime/this.getduration)*100);
+      console.log(this.curlength)
       }
+    },
+    curlength(options){
+      musicplay.musicCurrent(options)
+    },
+    volume(options){
+      this.volume=options;
+      this.$store.commit("setvolume",options*0.01);
     }
   },
  
   created(){
       
   },
+  mounted(){
+    this.volume=this.getvolume
+  },
   methods:{
+     collection(){
+       if(this.$store.getters.getToken!=null&&this.$store.getters.getToken!=""){
+          var hide={
+              songId:this.getid,
+              consumerId:this.$store.getters.getUserId
+          }
+          this.$axios.post("api/hide/add",hide).then((res)=>{
+              console.log(res);
+              if(res.data.code=10000){
+                    this.$notify({
+          title: '消息提示',
+          message: res.data.data,
+          type: 'success'
+        });
+              }else{
+        this.$notify({
+          title: '消息提示',
+          message: res.data.data,
+          type: 'success'
+        });
+              }
+          }).catch((error)=>{
+              consoel.log(error)
+          })
+          }else{
+             this.$notify.error({
+          title: '消息提示',
+          message: '您还没有登陆请登录后再进行收藏'
+        });
+          }
+        },
     topmusic(){
      let list=JSON.parse(window.sessionStorage.getItem("listofsongs"));
          if(this.getsongindex==0){
@@ -126,65 +171,58 @@ export default {
       this.$store.commit("setsinglistisshow","")
     },
    audio(e){
-           let height=e.clientY+e.currentTarget.offsetTop-600;
-           let sc=this.volumheight-height;
-           if(sc>80){
-             sc=100
-           }else if(sc<10){
-             sc=0;
-           }
-           sc=sc*0.01
-           this.$store.commit("setvolume",sc);
+           console.log(this.volume)
+           this.$store.commit("setvolume",this.volume*0.01);
    },
     // 点击播放条，切换播放进度
-    updatemove(e){
-       if(!this.tag){
-        //  进度条的左侧坐标
-        let left=this.$refs.curwidth.getBoundingClientRect().left;
-        // 
-        var sc=((e.clientX-left)/this.progresslength)*100;
+    // updatemove(e){
+    //    if(!this.tag){
+    //     //  进度条的左侧坐标
+    //     let left=this.$refs.curwidth.getBoundingClientRect().left;
+    //     // 
+    //     var sc=((e.clientX-left)/this.progresslength)*100;
 
-        if(sc>100){
-          sc=100
-        }else if(sc<0){
-          sc=0
-        }
-        this.curlength=sc;
-        musicplay.musicCurrent(sc);
+    //     if(sc>100){
+    //       sc=100
+    //     }else if(sc<0){
+    //       sc=0
+    //     }
+    //     this.curlength=sc;
+    //     musicplay.musicCurrent(sc);
        
-       }
-    },
+    //    }
+    // },
     // 拖拽开始
-   down(e){
-     console.log(e)
-     this.start=e.clientX;
-     this.tag=true;
-   },
+  //  down(e){
+  //    console.log(e)
+  //    this.start=e.clientX;
+  //    this.tag=true;
+  //  },
    
   //拖拽中
-   move(e){
-    if(!this.geturl){
-      return false;
-    }
-    if(this.tag){
-     var left=e.clientX - this.start;
-     var all=this.$refs.curwidth.getBoundingClientRect().width;
-     var length=((left+all)/this.progresslength)*100;
-     if(length>=100){
-       this.curlength=100;
-     }else{
-   this.curlength=length;
-     }
+  //  move(e){
+  //   if(!this.geturl){
+  //     return false;
+  //   }
+  //   if(this.tag){
+  //    var left=e.clientX - this.start;
+  //    var all=this.$refs.curwidth.getBoundingClientRect().width;
+  //    var length=((left+all)/this.progresslength)*100;
+  //    if(length>=100){
+  //      this.curlength=100;
+  //    }else{
+  //    this.curlength=length;
+  //    }
       
-       this.start=e.clientX; 
-      musicplay.musicCurrent(length)
+  //      this.start=e.clientX; 
+  //     musicplay.musicCurrent(length)
 
-    }
-   },
-   up(){
-    this.tag=false;
-    console.log("up")
-   },
+  //   }
+  //  },
+  //  up(){
+  //   this.tag=false;
+  //   console.log("up")
+  //  },
  
     dianlaba(){
       this.laba=!this.laba
@@ -199,12 +237,19 @@ export default {
       }
     },
     gomusic(){
+      console.log(this.getIsShow)
+    if(this.getIsShow){
+        this.$store.commit("setIsShow");
+        this.$router.go(-1);
+      }else{
+         this.$store.commit("setIsShow");
       this.$router.push({
         path:"/song",
         query:{
           id:this.$store.getters.getid
         }
       })
+      }
     }
 
   }
@@ -213,6 +258,12 @@ export default {
 </script>
 
 <style lang="scss" acoped>
+.el-slider{
+  margin-top:-20px;
+}
+.laba .el-slider{
+  margin-top:12px;
+}
 .play{
     width:100%;
     height:100px;
@@ -287,8 +338,7 @@ export default {
         }
       .body{
           width:400px;
-          height:5px;
-          background:#8888;
+          height:20px;
           position:relative;
 
           top:50px;
@@ -321,9 +371,8 @@ export default {
           right:0;
           margin:0 auto;
           left:0;
-          width:5px;
-          height:100px;
-          background:#8888;
+          width:40px;
+          height:130px;
           border-radius:5px 5px 5px 5px;
            overflow: hidden;
           .dian{

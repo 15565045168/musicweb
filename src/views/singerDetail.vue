@@ -33,9 +33,9 @@
            </li>
            <li v-for="(item,index) in music" :key="index">
              <h4>{{obj.name}}</h4>
-             <h4 @click="gomusic(item)">{{item.name}}</h4>
+             <h4>{{item.name}}</h4>
              <h4 @click="bofang(item)"><i :class="[$store.getters.getid==item.id?$store.getters.getplaybutton:'icon-bofang'+' '+'el-el-iconfont']"></i></h4>
-             <h4><i class="el-icon-star-off"></i></h4>
+             <h4 @click="collection(item)"><i class="el-icon-star-off"></i></h4>
            </li>
        </ul>
      </div>
@@ -68,6 +68,38 @@ export default {
        this.musicAll(id);
    },
    methods:{
+       collection(options){
+           
+          if(this.$store.getters.getToken!=null&&this.$store.getters.getToken!=""){
+          var hide={
+              songId:options.id,
+              consumerId:this.$store.getters.getUserId
+          }
+          this.$axios.post("api/hide/add",hide).then((res)=>{
+              console.log(res);
+              if(res.data.code=10000){
+                    this.$notify({
+          title: '消息提示',
+          message: res.data.data,
+          type: 'success'
+        });
+              }else{
+        this.$notify({
+          title: '消息提示',
+          message: res.data.data,
+          type: 'success'
+        });
+              }
+          }).catch((error)=>{
+              consoel.log(error)
+          })
+          }else{
+             this.$notify.error({
+          title: '消息提示',
+          message: '您还没有登陆请登录后再进行收藏'
+        });
+          }
+       },
        bofang(options){
            if(options.id==this.$store.getters.getid){
              if(this.$store.state.play.isplay){
@@ -95,7 +127,6 @@ export default {
    })
       },
       gomusic(options){
-// /singerDetail?id=1458731018772156416
 console.log(options)
   this.$router.push({
       path:"/song",
@@ -123,7 +154,8 @@ console.log(options)
        })
       },
       musicAll(options){
-      this.$axios.get("api//song/songall?id="+options).then((res)=>{
+      this.$axios.get("api/song/songall?id="+options).then((res)=>{
+       
           this.music=res.data.data;
       })
       }

@@ -108,9 +108,10 @@ return {
   }
   .singerall{
     width:1200px;
-    min-height:500px;
+    min-height:auto;
     margin:auto;
     margin-top:20px;
+    overflow: hidden;
   .everybody{
     float:left;
     width:220px;

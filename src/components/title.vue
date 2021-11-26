@@ -50,7 +50,18 @@
           </p>
         </div>
       </li>
-      <div v-if="$store.state.status">图片</div>
+      <li v-if="getToken" class="image">
+        
+        <el-dropdown trigger="click" @command="loginout">
+      <span class="el-dropdown-link">
+        <img :src="getUserAvator"/>
+      </span>
+         <el-dropdown-menu slot="dropdown">
+    <el-dropdown-item command="a">退出登录</el-dropdown-item>
+  </el-dropdown-menu>
+        </el-dropdown>
+       
+      </li>
       <div v-else>
         <li
           @click="gologin('login')"
@@ -73,7 +84,8 @@
 
 <script>
 import merge from "webpack-merge";
-
+import {mapGetters} from "vuex"
+import musicplay from "../utils/musicplay"
 export default {
   data() {
     return {
@@ -82,6 +94,17 @@ export default {
       singer: [],
       music: [],
     };
+  },
+  computed:{
+  ...mapGetters(["getToken","getUserAvator","getName"])
+  },
+  watch:{
+      getName(){
+        return this.text=this.getName;
+      },
+      text(options){
+        this.$store.commit("setName",options);
+      }
   },
   created() {
     switch (this.$route.path) {
@@ -146,6 +169,10 @@ export default {
     },
     gosearch(options) {
       this.activeid = "";
+      this.singer=[],
+      this.music=[],
+
+      this.$store.commit("setName",this.text);
       this.$router
         .push({
           path: "/" + options,
@@ -198,26 +225,70 @@ export default {
       }
     },
     gomusic(options) {
-      (this.music = []), (this.singer = []);
-      if (this.$route.path == "/song") {
-        this.$router.push({
-          query: merge(this.$route.query, { id: options.id }),
-        });
-        this.$router.go(0);
-      } else {
-        this.$router.push({
-          path: "/song",
-          query: {
-            id: options.id,
-          },
-        });
-      }
+     if(options.id==this.$store.getters.getid){
+             if(this.$store.state.play.isplay){
+             this.$store.commit("setisplay",false);
+             this.$store.commit("setplaybutton","icon-bofang"+' '+'el-el-iconfont');
+             this.$store.commit("setlistofsongs",options);
+             }else{
+              this.$store.commit("setisplay",true);
+              this.$store.commit("setplaybutton","icon-zanting"+' '+'el-el-iconfont')
+             this.$store.commit("setlistofsongs",options);
+            }
+           }else{
+               musicplay.musicplay(options.id,options.url,options.pic,options.auth,options.name,options.lynic);
+               this.$store.commit("setlistofsongs",options);
+               this.$store.commit("setsongindex",options.id)
+           }
+       
     },
-  },
-};
+    loginout(){
+         
+         setTimeout(()=>{
+          this.$store.commit("setToken","");
+          this.$store.commit("setUserAvator","");
+          this.$store.commit("setUserId","");
+          this.$store.commit("setUserEmail","");
+          this.$store.commit("setUserId","");
+          this.$store.commit("setUserIntroduction","");
+          this.$store.commit("setUserPhoneNum","");
+          this.$store.commit("setUsername","");
+         this.$notify({
+          title: '消息提示',
+          message: "退出成功",
+          type: 'success'
+        });
+        this.$router.push({
+          path:"/"
+        })
+         },500)
+    }
+
+  }
+}
 </script>
 
 <style lang="scss" scoped>
+.el-popper{
+  margin-top:-20px;
+}
+.image{
+  width:60px;
+  height:60px;
+  display: flex;
+  justify-items: center;
+  align-items: center;
+  img{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    border:1px solid #000;
+    text-align: center;
+    line-height:60px;
+    margin-top:20px;
+    margin-left:20px;
+  }
+}
 .title {
   width: 100%;
   height: 60px;

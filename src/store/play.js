@@ -19,8 +19,13 @@ const  play={
     volume:50, //音量 ,
     singlistisshow:false,//是否显示歌单列表
     songindex:0,//当前播放歌曲在列表中的第几项
+    isshow:false
 },
     mutations:{
+        // 设置song是否显示
+        setIsShow(state){
+         state.isshow=!state.isshow
+        },
       
         //设置歌单列表的显示隐藏
         setsinglistisshow(state,hehe){
@@ -143,6 +148,9 @@ const  play={
     
     },
     getters:{
+        getIsShow(state){
+           return state.isshow;
+        },
         //获取setsinglistisshow是否应该显示
         getsinglistisshow(state){
             return state.singlistisshow

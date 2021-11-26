@@ -96,7 +96,6 @@ export default {
 
 <style lang="scss" scoped>
 .audio{
-    position:fixed;
-    bottom:400px;
+   display: none;
 }
 </style>
